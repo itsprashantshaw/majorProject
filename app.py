@@ -40,13 +40,26 @@ if 'is_muted' not in st.session_state:
 
 # Gemini configuration
 def get_api_key():
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        api_key = st.text_input("Enter your Google API Key:", type="password")
+    try:
+        api_key = st.secrets["GOOGLE_API_KEY"]
+        return api_key
+    except Exception:
+        # If not found in secrets, try environment variable
+        api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
-            st.error("Please enter your Google API Key")
-            return None
-    return api_key
+            # If not found in environment, ask user
+            api_key = st.text_input("Enter your Google API Key:", type="password")
+            if not api_key:
+                st.error("Please enter your Google API Key")
+                return None
+        return api_key
+    # api_key = os.getenv("GOOGLE_API_KEY")
+    # if not api_key:
+    #     api_key = st.text_input("Enter your Google API Key:", type="password")
+    #     if not api_key:
+    #         st.error("Please enter your Google API Key")
+    #         return None
+    # return api_key
 
 # Function to autoplay audio in streamlit
 def autoplay_audio(file_path: str):
